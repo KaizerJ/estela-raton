@@ -14,8 +14,11 @@ import java.awt.Color;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    int background;
-    int trailColor;
+    private static final int MILISECONDS_BETWEEN_MOUSE_EVENTS = 20;
+    
+    private int background;
+    private int trail;
+    private long lastRecordedPointTime;
         
     /**
      * Creates new form mainFrame
@@ -39,12 +42,15 @@ public class MainFrame extends javax.swing.JFrame {
         backgroundComboBox = new javax.swing.JComboBox<>();
         trailComboBox = new javax.swing.JComboBox<>();
         lienzo = new com.mycompany.estela_raton.Lienzo();
+        jonayLabel = new javax.swing.JLabel();
+        samuelLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Estela de ratón");
 
-        backgroundLabel.setText("color del fondo:");
+        backgroundLabel.setText("Color del fondo:");
 
-        trailLabel.setText("color de la estela");
+        trailLabel.setText("Color de la estela");
 
         backgroundComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Blanco", "Azul", "Rojo", "Negro" }));
         backgroundComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -54,8 +60,12 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         trailComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Negro", "Blanco", "Azul", "Rojo" }));
+        trailComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trailComboBoxActionPerformed(evt);
+            }
+        });
 
-        lienzo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         lienzo.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 lienzoMouseMoved(evt);
@@ -70,38 +80,54 @@ public class MainFrame extends javax.swing.JFrame {
         );
         lienzoLayout.setVerticalGroup(
             lienzoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 221, Short.MAX_VALUE)
+            .addGap(0, 288, Short.MAX_VALUE)
         );
+
+        jonayLabel.setText("Jonay Suárez Ramírez");
+
+        samuelLabel.setText("Samuel Trujillo Santana");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addComponent(backgroundLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(backgroundComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(42, 42, 42)
-                .addComponent(trailLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(trailComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(36, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lienzo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lienzo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jonayLabel)
+                                .addGap(18, 18, 18)
+                                .addComponent(samuelLabel))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(backgroundLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(backgroundComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(36, 36, 36)
+                                .addComponent(trailLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(trailComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 22, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jonayLabel)
+                    .addComponent(samuelLabel))
+                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(backgroundLabel)
                     .addComponent(trailLabel)
                     .addComponent(backgroundComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(trailComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lienzo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -113,10 +139,21 @@ public class MainFrame extends javax.swing.JFrame {
         updateBackgroundColor();
     }//GEN-LAST:event_backgroundComboBoxActionPerformed
 
+    private void trailComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trailComboBoxActionPerformed
+        updateTrailColor();
+    }//GEN-LAST:event_trailComboBoxActionPerformed
+
     private void lienzoMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lienzoMouseMoved
-        int posx, posy;
-        
+        long eventTime = evt.getWhen();
+        if (eventTime - lastRecordedPointTime < MILISECONDS_BETWEEN_MOUSE_EVENTS){
+            return;
+        }
+        this.lastRecordedPointTime = eventTime;
+        int posx = evt.getX();
+        int posy = evt.getY();
+        this.lienzo.updateTrail(posx, posy);
     }//GEN-LAST:event_lienzoMouseMoved
+
 
     /**
      * @param args the command line arguments
@@ -128,12 +165,8 @@ public class MainFrame extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            javax.swing.UIManager.setLookAndFeel(
+                    javax.swing.UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -157,7 +190,9 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> backgroundComboBox;
     private javax.swing.JLabel backgroundLabel;
+    private javax.swing.JLabel jonayLabel;
     private com.mycompany.estela_raton.Lienzo lienzo;
+    private javax.swing.JLabel samuelLabel;
     private javax.swing.JComboBox<String> trailComboBox;
     private javax.swing.JLabel trailLabel;
     // End of variables declaration//GEN-END:variables
@@ -170,15 +205,36 @@ public class MainFrame extends javax.swing.JFrame {
                 color = Color.WHITE;
                 break;
             case 1:
-                color = Color.BLUE;
+                color = new Color(82, 168, 255); //Light blue
                 break;
             case 2:
-                color = Color.RED;
+                color = new Color(255, 128, 128); //Light red
                 break;
             case 3:
                 color = Color.BLACK;                
                 break;
         }
         this.lienzo.updateBackgroundColor(color);
+    }
+
+    private void updateTrailColor() {
+        trail = this.trailComboBox.getSelectedIndex();
+        Color color = Color.BLACK;
+        switch(trail){
+            case 0:
+                color = Color.BLACK;
+                break;
+            case 1:
+                color = Color.WHITE;
+                break;
+            case 2:
+                color = new Color(82, 168, 255); //Light blue
+                break;
+            case 3:
+                color = new Color(255, 128, 128); //Light red
+                break;
+        }
+        
+        this.lienzo.updateTrailColor(color);
     }
 }
