@@ -22,7 +22,7 @@ public class Lienzo extends JPanel {
         this.setForeground(trailColor);
         
         for (int i = 0; i < TRAIL_LENGTH; i++) {
-            g.fillOval(xPositions[i], yPositions[i], 10, 10);
+            g.fillPolygon(createTriangle(xPositions[i], yPositions[i]));
         }
     }
     public void updateBackgroundColor(Color color){
@@ -48,5 +48,26 @@ public class Lienzo extends JPanel {
         xPositions[0] = posx;
         yPositions[0] = posy;
         this.repaint();
+    }
+    
+    private Polygon createTriangle(int centerX, int centerY){
+        int[] verticesX = new int[3];
+        int[] verticesY = new int[3];
+        
+        int base = 10;
+        
+        // upper vertice
+        verticesX[0] = centerX;
+        verticesY[0] = centerY - base / 2;
+        
+        // left vertice
+        verticesX[1] = centerX - base / 2;
+        verticesY[1] = centerY + base / 2;
+        
+        // right vertice
+        verticesX[2] = centerX + base / 2;
+        verticesY[2] = centerY + base / 2;
+        
+        return new Polygon(verticesX, verticesY, 3);
     }
 }
