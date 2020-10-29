@@ -20,7 +20,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.mycompany.estala_raton.MainFrame</mainClass>
+                            <mainClass>com.mycompany.estela_raton.MainFrame</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
